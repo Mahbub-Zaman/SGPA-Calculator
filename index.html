@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SGPA Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 20px;
+      color: #333;
+    }
+    h2 {
+      text-align: center;
+      color: #444;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background: #007bff;
+      color: white;
+    }
+    /* zebra stripe effect */
+    #courseTable tr.course-row:nth-child(odd) {
+      background: #ffffff; /* white */
+    }
+    #courseTable tr.course-row:nth-child(even) {
+      background: #f0f0f0; /* light grey */
+    }
+    .footer-row {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+    }
+    select, input {
+      padding: 5px;
+      font-size: 14px;
+      width: 90%;
+    }
+    button {
+      background: #019054;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 15px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>SGPA Calculator</h2>
+
+  <table id="courseTable">
+    <tr>
+      <th>Sl No</th>
+      <th>Course Name</th>
+      <th>Credit</th>
+      <th>Grade</th>
+    </tr>
+    <tr class="course-row">
+      <td>1</td>
+      <td><input type="text" placeholder="Enter course name"></td>
+      <td>
+        <select>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>
+      </td>
+      <td>
+        <select>
+          <option value="4.00">A+ (Outstanding)</option>
+          <option value="3.75">A (Excellent)</option>
+          <option value="3.50">A- (Very Good)</option>
+          <option value="3.25">B+ (Good)</option>
+          <option value="3.00">B (Satisfactory)</option>
+          <option value="2.75">B- (Above Average)</option>
+          <option value="2.50">C+ (Average)</option>
+          <option value="2.25">C (Below Average)</option>
+          <option value="2.00">D (Pass)</option>
+          <option value="0.00">F (Fail)</option>
+        </select>
+      </td>
+    </tr>
+    <tr class="footer-row">
+      <td colspan="2">Total</td>
+      <td id="totalCredits">0</td>
+      <td id="sgpa">0.00</td>
+    </tr>
+  </table>
+
+  <div style="text-align:center;">
+    <button onclick="addRow()">+ Add Course</button>
+    <button onclick="calculateSGPA()">Calculate SGPA</button>
+  </div>
+
+  <div id="result"></div>
+
+  <script>
+    function addRow() {
+      let table = document.getElementById("courseTable");
+      let rowCount = table.rows.length;
+      let footerRow = table.rows[rowCount - 1]; // last row is footer
+      let row = table.insertRow(rowCount - 1);  // insert before footer
+      row.classList.add("course-row");
+
+      let cell1 = row.insertCell(0);
+      let cell2 = row.insertCell(1);
+      let cell3 = row.insertCell(2);
+      let cell4 = row.insertCell(3);
+
+      cell1.innerHTML = rowCount - 1; // Serial Number
+      cell2.innerHTML = '<input type="text" placeholder="Enter course name">';
+      cell3.innerHTML = `
+        <select>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+        </select>`;
+      cell4.innerHTML = `
+        <select>
+          <option value="4.00">A+ (Outstanding)</option>
+          <option value="3.75">A (Excellent)</option>
+          <option value="3.50">A- (Very Good)</option>
+          <option value="3.25">B+ (Good)</option>
+          <option value="3.00">B (Satisfactory)</option>
+          <option value="2.75">B- (Above Average)</option>
+          <option value="2.50">C+ (Average)</option>
+          <option value="2.25">C (Below Average)</option>
+          <option value="2.00">D (Pass)</option>
+          <option value="0.00">F (Fail)</option>
+        </select>`;
+
+      refreshRowColors();
+    }
+
+    function refreshRowColors() {
+      let rows = document.querySelectorAll("#courseTable tr.course-row");
+      rows.forEach((row, index) => {
+        if (index % 2 === 0) {
+          row.style.background = "#ffffff"; // white
+        } else {
+          row.style.background = "#f0f0f0"; // grey
+        }
+      });
+    }
+
+    function calculateSGPA() {
+      let table = document.getElementById("courseTable");
+      let rows = table.rows;
+      let totalCredits = 0;
+      let totalPoints = 0;
+
+      for (let i = 1; i < rows.length - 1; i++) { // skip header & footer
+        let credit = parseFloat(rows[i].cells[2].querySelector("select").value);
+        let gradePoint = parseFloat(rows[i].cells[3].querySelector("select").value);
+
+        totalCredits += credit;
+        totalPoints += credit * gradePoint;
+      }
+
+      let sgpa = (totalCredits === 0) ? 0 : (totalPoints / totalCredits);
+
+      document.getElementById("totalCredits").innerText = totalCredits;
+      document.getElementById("sgpa").innerText = sgpa.toFixed(2);
+
+      let remark = "";
+      if (sgpa >= 4.00) remark = "Outstanding";
+      else if (sgpa >= 3.75) remark = "Excellent";
+      else if (sgpa >= 3.50) remark = "Very Good";
+      else if (sgpa >= 3.25) remark = "Good";
+      else if (sgpa >= 3.00) remark = "Satisfactory";
+      else if (sgpa >= 2.75) remark = "Above Average";
+      else if (sgpa >= 2.50) remark = "Average";
+      else if (sgpa >= 2.25) remark = "Below Average";
+      else if (sgpa >= 2.00) remark = "Pass";
+      else remark = "Fail";
+
+      document.getElementById("result").innerHTML =
+        `Your SGPA is <b>${sgpa.toFixed(2)}</b> (${remark})`;
+    }
+
+    // apply zebra striping at load
+    refreshRowColors();
+  </script>
+
+</body>
+</html>
