@@ -4,7 +4,7 @@ A simple **web-based SGPA calculator** to help students calculate their Semester
 
 ---
 ## 🔗 Live Demo
-🚀 [Click Here to Try Payoo Now](https://mahbub-zaman.github.io/SGPA-Calculator/)
+🚀 [Click Here to Try SGPA Calculator Now](https://mahbub-zaman.github.io/SGPA-Calculator/)
 
 ---
 
